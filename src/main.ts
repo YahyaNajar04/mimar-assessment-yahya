@@ -1,8 +1,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import {createInstancedGrid} from './scene/createInstancedGrid';
-
+import { createInstancedGrid } from "./scene/createInstancedGrid";
 
 //Create the scene
 const scene = new THREE.Scene();
@@ -26,57 +25,31 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-renderer.setPixelRatio(
-  window.devicePixelRatio
-);
+renderer.setPixelRatio(window.devicePixelRatio);
 
 document.body.appendChild(renderer.domElement);
-
-//Page title and object info
-const title = document.createElement("div")
-title.textContent = "Mimar Tech - Instanced Building Grid";
-title.style.position = "absolute";
-title.style.top = "20px";
-title.style.left = "20px";
-title.style.color = "white";
-title.style.fontWeight = "bold";
-title.style.fontFamily = "Arial, sans-serif";
-title.style.fontSize = "16px";
-document.body.appendChild(title);
 
 //Orbital Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 
 controls.enableDamping = true;
 
-//Cube TEST To check orbital 
-/**
-const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
-const cubeMaterial = new THREE.MeshStandardMaterial({
-  color: 0x00ff00,
-});
-
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-scene.add(cube);
-**/
+//Instanced Mesh Creation
 
 const instanceMesh = createInstancedGrid();
 
 scene.add(instanceMesh);
 
-const material =
-  instanceMesh.userData.material as THREE.ShaderMaterial;
+const material = instanceMesh.userData.material as THREE.ShaderMaterial;
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2(-99, -99);
+const hoverInfo = document.getElementById("hovered") as HTMLDivElement;
 
 window.addEventListener("mousemove", (event) => {
-  mouse.x =
-    (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 
-  mouse.y =
-    -(event.clientY / window.innerHeight) * 2 + 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
 //Lighting Setup
@@ -90,22 +63,15 @@ directionalLight.position.set(10, 10, 10);
 scene.add(directionalLight);
 
 //Helper grid
-const grid = new THREE.GridHelper(
-  80,
-  80
-);
+const grid = new THREE.GridHelper(80, 80);
 scene.add(grid);
 
 window.addEventListener("resize", () => {
-  camera.aspect = 
-    window.innerWidth / window.innerHeight;
+  camera.aspect = window.innerWidth / window.innerHeight;
 
   camera.updateProjectionMatrix();
 
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-  );
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 //Animation Loop
@@ -128,6 +94,16 @@ function animate() {
       : -1;
 
   material.uniforms.uHoveredIndex.value = hoveredId;
+  if (hoveredId >= 0) {
+    const col = hoveredId % 25;
+    const row = Math.floor(hoveredId / 25);
+
+    hoverInfo.textContent = `Instance ID: ${hoveredId} | Grid Position: (${col}, ${row})`;
+
+    hoverInfo.style.opacity = "1";
+  } else {
+    hoverInfo.style.opacity = "0";
+  }
 
   controls.update();
 

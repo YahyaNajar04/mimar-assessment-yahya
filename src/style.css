@@ -1,4 +1,54 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  margin:0;
-  overflow:hidden;
+  margin: 0;
+  background: #0a0a0f;
+  overflow: hidden;
+  font-family: "Courier New", monospace;
+}
+
+canvas {
+  display: block;
+}
+
+#ui {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  color: #7affe4;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  line-height: 1.8;
+}
+
+#ui .title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.2em;
+}
+
+#ui .dim {
+  color: #445566;
+}
+
+#hovered {
+  position: fixed;
+  bottom: 24px;
+  left: 20px;
+  color: #7affe4;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.2s;
 }
