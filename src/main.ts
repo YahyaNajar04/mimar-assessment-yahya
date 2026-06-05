@@ -1,10 +1,12 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import {createInstancedGrid} from './scene/createInstancedGrid';
+
 
 //Create the scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x222222);
+scene.background = new THREE.Color(0x000000);
 
 //Camera Setup
 const camera = new THREE.PerspectiveCamera(
@@ -30,6 +32,18 @@ renderer.setPixelRatio(
 
 document.body.appendChild(renderer.domElement);
 
+//Page title and object info
+const title = document.createElement("div")
+title.textContent = "Mimar Tech - Instanced Building Grid";
+title.style.position = "absolute";
+title.style.top = "20px";
+title.style.left = "20px";
+title.style.color = "white";
+title.style.fontWeight = "bold";
+title.style.fontFamily = "Arial, sans-serif";
+title.style.fontSize = "16px";
+document.body.appendChild(title);
+
 //Orbital Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -47,24 +61,23 @@ const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 scene.add(cube);
 **/
 
-//Box grid arrangment
-const geometry = 
-  new THREE.BoxGeometry(
-    1,
-    1,
-    1
-  );
-
-  const material = new THREE.MeshStandardMaterial();
-
-  const instanceMesh = 
-    new THREE.InstancedMesh(
-      geometry,
-      material,
-      500
-    )
+const instanceMesh = createInstancedGrid();
 
 scene.add(instanceMesh);
+
+const material =
+  instanceMesh.userData.material as THREE.ShaderMaterial;
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2(-99, -99);
+
+window.addEventListener("mousemove", (event) => {
+  mouse.x =
+    (event.clientX / window.innerWidth) * 2 - 1;
+
+  mouse.y =
+    -(event.clientY / window.innerHeight) * 2 + 1;
+});
 
 //Lighting Setup
 
@@ -78,15 +91,46 @@ scene.add(directionalLight);
 
 //Helper grid
 const grid = new THREE.GridHelper(
-  50,
-  50
+  80,
+  80
 );
 scene.add(grid);
 
+window.addEventListener("resize", () => {
+  camera.aspect = 
+    window.innerWidth / window.innerHeight;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+});
+
 //Animation Loop
+const clock = new THREE.Clock();
+
 function animate() {
   requestAnimationFrame(animate);
+
+  const time = clock.getElapsedTime();
+
+  material.uniforms.uTime.value = time;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const hits = raycaster.intersectObject(instanceMesh);
+
+  const hoveredId =
+    hits.length > 0 && hits[0].instanceId !== undefined
+      ? hits[0].instanceId
+      : -1;
+
+  material.uniforms.uHoveredIndex.value = hoveredId;
+
   controls.update();
+
   renderer.render(scene, camera);
 }
 
