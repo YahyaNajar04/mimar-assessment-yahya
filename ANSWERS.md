@@ -107,3 +107,6 @@ When using `InstancedMesh`, only boxes which share the same shape and shader can
 
 **Limitation 2 — High frame update cost at high counts.**
 Changing one instance's matrix still requires uploading the full `instanceMatrix` buffer. For scenarios with thousands of moving instances updating every frame, a GPU-driven approach scales better than CPU-side instancing.     
+
+**Limitation 3 — Per instance culling is not automatic.**
+Three.js culls the entire InstancedMesh by single bounding box. If the mesh spans the whole scene it won't be culled even when the instances are off screen. This makes instaces a poor fit for large scenes where a large amount of instances would be frustum-culled.
