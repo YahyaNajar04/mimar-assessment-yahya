@@ -1,6 +1,6 @@
 # mimar-assessment
 
-Mimar Tech — Frontend 3D Developer Take-Home Assessment
+Mimar — Frontend 3D Developer Assessment
 Open [https://yahyanajar04.github.io/mimar-assessment-yahya/] to veiw the assessment.
 
 ## Running locally
