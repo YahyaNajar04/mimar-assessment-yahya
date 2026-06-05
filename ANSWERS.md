@@ -29,7 +29,7 @@ gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
 The vertex normals stored in the geometry are computed for the original un-displaced mesh. After displacement each vertex is in a different position, hence the surface geometry changes. This means the lighting model is evaluating incorrectly, which may cause flat or broken shading.
 
 **Fix 1 — Recompute the normals based on the displaced geometry.**
-Express the displacement as a differentiable function of the vertex's UV coordinates, then compute the partial derivatives of the displaced position with respect to U and V. The cross product of those two tangent vectors gives the correct new normal at that displaced position. This is exact but requires the displacement function to be expressible in closed form.
+Recompute the normals based on the displaced geometry. Since the surface has changed shape, the original normals are no longer valid. One approach is to derive new normals from the displaced surface using partial derivatives.
 
 **Fix 2 — Finite Differences.**
 Evaluate the displacement at two nearby UV offsets `(u + ε, v)` and `(u, v + ε)`, compute the world-space positions those would produce, and derive the new normal from the cross product of the resulting difference vectors. This approximation works for any displacement function, including ones based on noise, and is the standard approach used in procedural terrain shaders. The epsilon should be small but not so small that floating-point precision degrades the result.
